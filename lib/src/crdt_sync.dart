@@ -18,7 +18,7 @@ typedef RecordValidator = FutureOr<bool> Function(String table, CrdtRecord);
 typedef ChangesetMapper = CrdtRecord Function(String table, CrdtRecord record);
 typedef OnChangeset = void Function(
     String nodeId, Map<String, int> recordCounts);
-typedef OnConnect = void Function(String peerId, Object? customData);
+typedef OnConnect = FutureOr Function(String peerId, Object? customData);
 typedef OnDisconnect = void Function(String peerId, int? code, String? reason);
 
 class CrdtSync {
@@ -172,7 +172,7 @@ class CrdtSync {
     try {
       final handshake = await _performHandshake();
       _peerId = handshake.nodeId;
-      onConnect?.call(_peerId!, handshake.data);
+      await onConnect?.call(_peerId!, handshake.data);
 
       // Monitor for changes and send them immediately
       localSubscription = crdt.onTablesChanged
